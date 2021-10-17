@@ -9,6 +9,11 @@ for root, _, files in os.walk("./"):
   for file_name in files:
     if re.match(r"^alaprajz\d.txt$", file_name): file_pathes.append(root.replace("\\", "/")+"/"+file_name)
 
+# ↓ Ellenőrzi, hogy talált e fájlokat ↓
+if not file_pathes:
+  print("Nem talált helyes fájlt a program.")
+  exit()
+
 # ↓ Kiírja a talált fájlokat és a sorszámukat ↓
 print("Talált fájlok:")
 for index, file_path in enumerate(file_pathes):
@@ -20,7 +25,7 @@ while True:
     chosen_file = file_pathes[int(input("Válassz egy fájlt (írd be a sorszámát): "))]
     break
   except ValueError: print("Nem számot adtál meg! Próbáld újra.")
-  except IndexError: print("Túl nagy vagy túl nagy számot adtál meg! Próbáld újra.")
+  except IndexError: print("Túl nagy vagy túl kicsi számot adtál meg! Próbáld újra.")
 
 # ↓ Beolvassa a választott fájlt és kinyeri belőle a szükséges adatokat ↓
 with open(chosen_file, "r") as file:
