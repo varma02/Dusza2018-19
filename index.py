@@ -7,7 +7,7 @@ except Exception:
 file_pathes = []
 for root, _, files in os.walk("./"):
   for file_name in files:
-    if re.match(r"^alaprajz\d.txt$", file_name): file_pathes.append(root.replace("\\", "/")+"/"+file_name)
+    if re.match(r"^alaprajz(\d|\d\d)\.txt$", file_name): file_pathes.append(root.replace("\\", "/")+"/"+file_name)
 
 # ↓ Ellenőrzi, hogy talált e fájlokat ↓
 if not file_pathes:
@@ -27,16 +27,64 @@ while True:
   except ValueError: print("Nem számot adtál meg! Próbáld újra.")
   except IndexError: print("Túl nagy vagy túl kicsi számot adtál meg! Próbáld újra.")
 
-# ↓ Beolvassa a választott fájlt és kinyeri belőle a szükséges adatokat ↓
-with open(chosen_file, "r") as file:
-  lines = file.readlines()
-  height, width = lines[0].strip().split(" ")
-  height = int(height); width = int(width)
-  grid = [[int(x) for x in y.strip()] for y in lines[1:]]
+class Pathfinding:
+  def __init__(self, file_path:str):
+    with open(file_path, "r") as file:
+      lines = file.readlines()
+      self.height, self.width = lines[0].strip().split(" ")
+      self.height = int(self.height); self.width = int(self.width)
+      self.grid = [[int(x) for x in y.strip()] for y in lines[1:]]
+      self.complete_grid = [["F"]]
+  
+  def get_obj(self, y:int, x:int):
+    try: return self.complete_grid[y][x]
+    except IndexError: 
+      try: 
+        if self.grid[y][x]: return "U"
+        else: return "."
+      except IndexError:
+        return "."
 
-# ↓ PATHFINDING ↓
-for y in range(height):
-  for x in range(width):
-    if grid[y][x]: print("U", end="")
-    else: print(".", end="")
-  print()
+  def JUST_DO_IT(self, printing:bool=True):
+    for y in range(self.height):
+      for x in range(self.width):
+        if self.grid[y][x] and \
+        (self.get_obj(y-1, x) == "F" or \
+        self.get_obj(y+1, x) == "F" or \
+        self.get_obj(y, x-1) == "F" or \
+        self.get_obj(y, x+1) == "F"):
+          print("F", end="")
+          self.complete_grid[y].append("F")
+
+        elif self.grid[y][x] and \
+        self.get_obj(y-1, x) == "." and \
+        self.get_obj(y+1, x) == "." and \
+        self.get_obj(y, x-1) == "." and \
+        self.get_obj(y, x+1) == ".":
+          print("S", end="")
+          self.complete_grid[y].append("S")
+
+        elif self.grid[y][x] and \
+        (self.get_obj(y-1, x) in ["A", "U"] or \
+        self.get_obj(y+1, x) in ["A", "U"]) and \
+        (self.get_obj(y, x+1) in ["A", "U"] or \
+        self.get_obj(y, x-1) in ["A", "U"]) and \
+        (self.get_obj(y+1, x+1) in ["A", "U"] or \
+        self.get_obj(y-1, x-1) in ["A", "U"] or \
+        self.get_obj(y+1, x-1) in ["A", "U"] or \
+        self.get_obj(y-1, x+1) in ["A", "U"]):
+          print("A", end="")
+          self.complete_grid[y].append("A")
+
+        elif self.grid[y][x]: 
+          print("K", end="")
+          self.complete_grid[y].append("K")
+
+        else: 
+          print(".", end="")
+          self.complete_grid[y].append(".")
+      self.complete_grid.append([])
+      print()
+    return self.complete_grid
+
+Pathfinding(chosen_file).JUST_DO_IT()
