@@ -45,15 +45,15 @@ class Pathfinding:
       except IndexError:
         return "."
 
-  def JUST_DO_IT(self, printing:bool=True):
-    for y in range(self.height):
-      for x in range(self.width):
+  def make_grid(self, printing:bool=True, range_reverse:bool=False):
+    for y in range(0 if not range_reverse else self.height-1, self.height if not range_reverse else 0, 1 if not range_reverse else -1):
+      for x in range(0 if not range_reverse else self.width-1, self.width if not range_reverse else 0, 1 if not range_reverse else -1):
         if self.grid[y][x] and \
         (self.get_obj(y-1, x) == "F" or \
         self.get_obj(y+1, x) == "F" or \
         self.get_obj(y, x-1) == "F" or \
         self.get_obj(y, x+1) == "F"):
-          print("F", end="")
+          if printing: print("F", end="")
           self.complete_grid[y].append("F")
 
         elif self.grid[y][x] and \
@@ -61,7 +61,7 @@ class Pathfinding:
         self.get_obj(y+1, x) == "." and \
         self.get_obj(y, x-1) == "." and \
         self.get_obj(y, x+1) == ".":
-          print("S", end="")
+          if printing: print("S", end="")
           self.complete_grid[y].append("S")
 
         elif self.grid[y][x] and \
@@ -73,18 +73,37 @@ class Pathfinding:
         self.get_obj(y-1, x-1) in ["A", "U"] or \
         self.get_obj(y+1, x-1) in ["A", "U"] or \
         self.get_obj(y-1, x+1) in ["A", "U"]):
-          print("A", end="")
+          if printing: print("A", end="")
           self.complete_grid[y].append("A")
 
         elif self.grid[y][x]: 
-          print("K", end="")
+          if printing: print("K", end="")
           self.complete_grid[y].append("K")
 
         else: 
-          print(".", end="")
+          if printing: print(".", end="")
           self.complete_grid[y].append(".")
       self.complete_grid.append([])
-      print()
+      if printing: print()
     return self.complete_grid
 
-Pathfinding(chosen_file).JUST_DO_IT()
+xd = Pathfinding(chosen_file)
+xd.make_grid(False)
+xd.make_grid(False)
+xd.make_grid()
+
+#FFFFFFFFFFF
+#F.....F...F
+#F.KK..F.K.F
+#F.K...F.K.F
+#F.K...F.K.F
+#F.K.S.F.K.F
+#F.....F.K.F
+#FFF...F...F
+#F.....F...F
+#F.AA..F...F
+#F.AA..F...F
+#F.AA..F...F
+#F.....F...F
+#FFFFFFFFFFF
+
