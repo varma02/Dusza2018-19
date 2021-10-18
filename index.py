@@ -3,30 +3,6 @@ except Exception:
   print("Az egyik szükséges modul nincs rajta a gépeden!")
   exit()
 
-# ↓ Végigmegy az összes almappán, és összegyűjti az alaprajzfájlokat ↓
-file_pathes = []
-for root, _, files in os.walk("./"):
-  for file_name in files:
-    if re.match(r"^alaprajz(\d|\d\d)\.txt$", file_name): file_pathes.append(root.replace("\\", "/")+"/"+file_name)
-
-# ↓ Ellenőrzi, hogy talált e fájlokat ↓
-if not file_pathes:
-  print("Nem talált helyes fájlt a program.")
-  exit()
-
-# ↓ Kiírja a talált fájlokat és a sorszámukat ↓
-print("Talált fájlok:")
-for index, file_path in enumerate(file_pathes):
-  print(f"  {index} - {file_path}")
-
-# ↓ Bekéri a felhasználótól a választott fájlt, aztán ellenőrzi, hogy jó-e ↓
-while True:
-  try: 
-    chosen_file = file_pathes[int(input("Válassz egy fájlt (írd be a sorszámát): "))]
-    break
-  except ValueError: print("Nem számot adtál meg! Próbáld újra.")
-  except IndexError: print("Túl nagy vagy túl kicsi számot adtál meg! Próbáld újra.")
-
 class Pathfinding:
   def __init__(self, file_path:str):
     with open(file_path, "r") as file:
@@ -87,10 +63,32 @@ class Pathfinding:
       if printing: print()
     return self.complete_grid
 
-xd = Pathfinding(chosen_file)
-xd.make_grid(False)
-xd.make_grid(False)
-xd.make_grid()
+
+# ↓ Végigmegy az összes almappán, és összegyűjti az alaprajzfájlokat ↓
+file_pathes = []
+for root, _, files in os.walk("./"):
+  for file_name in files:
+    if re.match(r"^alaprajz(\d+)\.txt$", file_name): file_pathes.append(root.replace("\\", "/")+"/"+file_name)
+
+# ↓ Ellenőrzi, hogy talált e fájlokat ↓
+if not file_pathes:
+  print("Nem talált helyes fájlt a program.")
+  exit()
+
+# ↓ Kiírja a talált fájlokat és a sorszámukat ↓
+print("Talált fájlok:")
+for index, file_path in enumerate(file_pathes):
+  print(f"  {index} - {file_path}")
+
+# ↓ Bekéri a felhasználótól a választott fájlt, aztán ellenőrzi, hogy jó-e ↓
+while True:
+  try: 
+    input_ = input("Válassz egy fájlt (írd be a sorszámát): ")
+    if not input_: break
+    chosen_file = file_pathes[int(input_)]
+    Pathfinding(chosen_file).make_grid()
+  except ValueError: print("Nem számot adtál meg! Próbáld újra.")
+  except IndexError: print("Túl nagy vagy túl kicsi számot adtál meg! Próbáld újra.")
 
 #FFFFFFFFFFF
 #F.....F...F
@@ -98,9 +96,9 @@ xd.make_grid()
 #F.K...F.K.F
 #F.K...F.K.F
 #F.K.S.F.K.F
-#F.....F.K.F
-#FFF...F...F
 #F.....F...F
+#FFF...FFFFF
+#F.........F
 #F.AA..F...F
 #F.AA..F...F
 #F.AA..F...F
